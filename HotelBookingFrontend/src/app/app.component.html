@@ -1,0 +1,43 @@
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+<!-- * * * * * * * * * * * The content below * * * * * * * * * * * -->
+<!-- * * * * * * * * * * is only a placeholder * * * * * * * * * * -->
+<!-- * * * * * * * * * * and can be replaced.  * * * * * * * * * * -->
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+<!-- * * * * * * * * * Delete the template below * * * * * * * * * -->
+<!-- * * * * * * * to get started with your project! * * * * * * * -->
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+<div class="bg-slate-300">
+  <nav class="flex justify-between h-15 mb-3 mx-4">
+    <!-- // TODO: later make it like a button to move to home or this app component -->
+    <div class="logo my-auto h-15 w-10 rounded cursor-pointer">
+      <img
+        alt="logo-text"
+        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLYY2gSL1wnio4dK40Qk_eD_kdbbS1I5W4OA&s"
+      />
+    </div>
+    <div class="header">
+      <h1 class="text-5xl ml-[200px]">GMU Hotels</h1>
+    </div>
+    <div class="login-signup my-auto">
+      @if(!IsLoggedIn){
+      <button class="blue-btn" routerLink="login">Login</button>
+      <button class="blue-btn" routerLink="signup">Signup</button>
+      }@else {
+      <button class="blue-btn" routerLink="rooms">Rooms</button>
+      <!-- Pass the userid to the profile button later -->
+      <button class="blue-btn" (click)="setUpUserId()">My Profile</button>
+      <button class="blue-btn" (click)="logout()">Logout</button>
+     
+      }
+    </div>
+  </nav>
+</div>
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+<!-- * * * * * * * * * * * The content above * * * * * * * * * * * * -->
+<!-- * * * * * * * * * * is only a placeholder * * * * * * * * * * * -->
+<!-- * * * * * * * * * * and can be replaced.  * * * * * * * * * * * -->
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+<!-- * * * * * * * * * * End of Placeholder  * * * * * * * * * * * * -->
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+
+<router-outlet />

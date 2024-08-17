@@ -1,0 +1,6 @@
+.idea
+.vscode
+application.properties
+application.yaml
+application.yml
+*.env

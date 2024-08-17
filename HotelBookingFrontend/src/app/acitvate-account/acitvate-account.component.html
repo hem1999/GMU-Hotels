@@ -1,0 +1,55 @@
+<main class="flex justify-center h-[80vh] items-center">
+    <div class="flex flex-col justify-center">
+      <h1 class="mx-auto text-3xl mb-8">Activation Code</h1>
+      <form [formGroup]="otpForm" (ngSubmit)="onSubmitActivateAccount()">
+        <div class="otp">
+          <input
+            type="text"
+            name="otp1"
+            maxlength="1"
+            class="w-[30px] h-[50px] border-slate-400 rounded border-2 m-2"
+            formControlName="otp1"
+          />
+          <input
+            type="text"
+            name="otp2"
+            maxlength="1"
+            class="w-[30px] h-[50px] border-slate-400 rounded border-2 m-2"
+            formControlName="otp2"
+          />
+          <input
+            type="text"
+            name="otp3"
+            maxlength="1"
+            class="w-[30px] h-[50px] border-slate-400 rounded border-2 m-2"
+            formControlName="otp3"
+          />
+          <input
+            type="text"
+            name="otp4"
+            maxlength="1"
+            class="w-[30px] h-[50px] border-slate-400 rounded border-2 m-2"
+            formControlName="otp4"
+          />
+          <input
+            type="text"
+            name="otp5"
+            maxlength="1"
+            class="w-[30px] h-[50px] border-slate-400 rounded border-2 m-2"
+            formControlName="otp5"
+          />
+          <input
+            type="text"
+            name="otp6"
+            maxlength="1"
+            class="w-[30px] h-[50px] border-slate-400 rounded border-2 m-2"
+            formControlName="otp6"
+          />
+        </div>
+  
+        <div class="mx-auto">
+          <input type="submit" value="Activate" class="blue-btn" />
+        </div>
+      </form>
+    </div>
+  </main>

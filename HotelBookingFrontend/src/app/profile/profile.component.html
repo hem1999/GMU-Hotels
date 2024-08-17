@@ -1,0 +1,138 @@
+<div class="flex justify-end mr-3">
+  <button
+    class="blue-btn"
+    (click)="toggleUpdateForm()"
+    [ngClass]="{ 'bg-red-400 border-red-500': showUpdateForm == true }"
+  >
+    {{ updateButtonText }}
+  </button>
+  <button
+    class="blue-btn"
+    (click)="toggleBookings()"
+    [ngClass]="{ 'bg-red-400 border-red-500': showBookings == true }"
+  >
+    {{ bookingButtonText }}
+  </button>
+
+  @if(userType == 'ADMIN'){
+    <button
+    class="blue-btn"
+    routerLink="/addRoom"
+  >
+    Add Room
+  </button>
+  }
+</div>
+<div class="flex justify-center mt-5">
+  @if(showUpdateForm){
+  <div class="pt-5 w-[45%] border-2 border-slate-400 rounded">
+    <form [formGroup]="updateUserForm" (ngSubmit)="onUpdateSubmit()">
+      <div class="flex justify-start ml-0 pl-0 my-3">
+        <div class="w-[50%]">
+          <label class="mx-6">First Name</label>
+          <input
+            type="text"
+            name="firstName"
+            formControlName="firstName"
+            class="sim-input"
+          />
+        </div>
+        <div class="w-[50%]">
+          <label class="mx-6">Last Name</label>
+          <input
+            type="text"
+            name="lastName"
+            formControlName="lastName"
+            class="sim-input"
+          />
+        </div>
+      </div>
+      <div class="flex justify-start ml-0 pl-0 my-3 mr-4">
+        <div class="w-[30%]">
+          <label class="mx-6">phone</label>
+          <input
+            type="text"
+            name="phone"
+            formControlName="phone"
+            class="sim-input"
+          />
+        </div>
+        <div class="w-[65%]">
+          <label class="mx-6">Address</label>
+          <input
+            type="text"
+            name="address"
+            formControlName="address"
+            class="sim-input"
+          />
+        </div>
+      </div>
+
+      <div class="flex justify-start ml-0 pl-0">
+        <div>
+          <label class="mx-6">City</label>
+          <input
+            type="text"
+            name="City"
+            formControlName="city"
+            class="sim-input"
+          />
+        </div>
+        <div>
+          <label class="mx-6">State</label>
+          <input
+            type="text"
+            name="state"
+            formControlName="state"
+            class="sim-input"
+          />
+        </div>
+        <div>
+          <label class="mx-6">zip</label>
+          <input
+            type="text"
+            name="zip"
+            formControlName="zip"
+            class="sim-input"
+          />
+        </div>
+        <div>
+          <label class="mx-6">Country</label>
+          <input
+            type="text"
+            name="country"
+            formControlName="country"
+            class="sim-input"
+          />
+        </div>
+      </div>
+      <div class="mt-8 mx-4">
+        <button class="blue-btn">Update</button>
+      </div>
+    </form>
+  </div>
+  }
+</div>
+@if(showBookings){
+<app-list-bookings
+  [bookings]="currentUserProfile().bookings"
+></app-list-bookings>
+}
+
+@if(!showBookings && !showUpdateForm){
+<div>
+  <h1 class="text-3xl">Hello {{ this.currentUserProfile().username }}</h1>
+  <div>
+    <p>First name: {{ this.currentUserProfile().firstName }}</p>
+    <p>Last name: {{ this.currentUserProfile().lastName }}</p>
+    <p>Email: {{ this.currentUserProfile().email }}</p>
+    <p>Phone: {{ this.currentUserProfile().phone }}</p>
+    <p>Address: {{ this.currentUserProfile().address }}</p>
+    <p>City: {{ this.currentUserProfile().city }}</p>
+    <p>State: {{ this.currentUserProfile().state }}</p>
+    <p>Zip: {{ this.currentUserProfile().zip }}</p>
+    <p>Country: {{ this.currentUserProfile().country }}</p>
+    <p>UserType: {{ this.currentUserProfile().userType }}</p>
+  </div>
+</div>
+}

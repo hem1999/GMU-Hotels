@@ -1,0 +1,54 @@
+<div class="w-[75%]">
+    <h1 class="text-center text-3xl">{{ currentRoom()?.roomName }}</h1>
+</div>
+<div class="mx-[3%]">
+    <div class="flex justify-start">
+        <!-- Image and Room Location horizontally aligned -->
+         <div class="rounded border-2 border-slate-400 w-[70%]">
+            <img src="{{currentRoom()?.mainImgSrc}}" alt="{{ currentRoom()?.roomName }}'s image" class="rounded">
+         </div>
+         <div class="rounded border-2 border-slate-400 ml-4 w-[25%]">
+            <div class="p-2">
+                <div class="flex justify-start">
+                    <p class="mt-2 text-gray-700">Price Per Night:</p>
+                    <p class="text-3xl ml-5">${{ currentRoom()?.pricePerNight}}</p>
+                </div>
+                <div class="border-2 border-b-black mb-3"></div>
+                <p><span class="text-gray-700">roomType:</span> <span>{{currentRoom()?.roomType}}</span></p>
+                <p><span class="text-gray-700">roomCapacity:</span> <span>{{currentRoom()?.roomCapacity}}</span></p>
+                <div class="border-2 border-b-black mb-3"></div>
+                <p class="text-xl">Contact Info: </p>
+                <div class="border-2 border-b-slate-400"></div>
+                <p><span class="text-gray-700">Address:</span> <span class="ml-2">{{currentRoom()?.roomAddress}}</span></p>
+                <p><span class="text-gray-700">City:</span> <span class="ml-2">{{currentRoom()?.roomCity}}</span></p>
+                <p><span class="text-gray-700">State:</span> <span class="ml-2">{{currentRoom()?.roomState}}</span></p>
+                <p><span class="text-gray-700">Zipcode:</span> <span class="ml-2">{{currentRoom()?.roomZip}}</span></p>
+                <p><span class="text-gray-700">Country:</span> <span class="ml-2">{{currentRoom()?.roomCountry}}</span></p>
+                <p><span class="text-gray-700">Phone:</span> <span class="ml-2">{{currentRoom()?.roomPhone}}</span></p>
+                <div class="border-2 border-b-black my-4"></div>
+
+                <form [formGroup]="availabilityForm" (ngSubmit)="onCheckAvailabilitySubmit()">
+                    <div>
+                        <label>StartDate: </label>
+                        <input type="date" class="sim-input" formControlName="startDate">
+                    </div>
+                    <div>
+                        <label>EndDate: </label>
+                        <input type="date" class="sim-input" formControlName="endDate">
+                    </div>
+                    <button type="submit" class="blue-btn ml-[25%] w-[45%]">Add to Cart</button>
+                </form>
+
+
+
+            </div>
+         </div>
+    </div>
+    <div>
+        <p>roomDescription: <span>{{ currentRoom()?.roomDescription}}</span></p>
+        <!-- add to cart with dates (which checks for availability!) -->
+    </div>
+    <div>
+        <!-- All feedbacks  and let user input the feedback. -->
+    </div>
+</div>
