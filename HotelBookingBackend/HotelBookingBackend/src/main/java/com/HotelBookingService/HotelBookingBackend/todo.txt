@@ -1,0 +1,25 @@
+[DONE]0. Implement and complete Feedback Entity [fetch feedbacks by userId, roomId, allFeedbacks]
+[DONE] 0. Implement the DTO for post request of user also!
+[Done] 2. From booking also you should be able to get rooms
+[Done] 1. From user, you should get created rooms, only if he is admin
+[Done] 3. From rooms --> you should get all rooms available with no booking between startDate and EndDate
+4. While creating the room, user should be able to upload photos,
+    one should be chosen as primary, this will show up on list
+    others will showup as slider, upon viewing the specific details of it.
+
+[Done] 5. In the update make it easy for user to store the booking and room,
+    so that it won't send all the unnecessary data via rest api. [Created DTOs in each]
+
+5. price shown on front page
+5. able to book one or multiple that are added to cart on client side!
+5. Individual Room Pages with feedback module integrated, overall ratings on rooms page itself.
+5. password, email updates should be secure!
+
+6. Since we are asking for unique username and email, you should have a endpoint to
+    check if they are already taken.
+
+
+
+lastly. UserType can only accept two values 'ADMIN' & 'CUSTOMER'
+lastly.[Guess these can be done from client side!!!] There should be a validation for phone and email, give back the feedback to user!
+lastly. There should be a landingPage from where you will be give option to log in and Signup!

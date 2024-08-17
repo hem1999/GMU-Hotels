@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Acknowledgement</title>
+</head>
+<body>
+    <p th:text="Hello +${bookedBy},"></p>
+    <div th:each="room : ${rooms}" th:text="${room}"></div>
+</body>
+</html>

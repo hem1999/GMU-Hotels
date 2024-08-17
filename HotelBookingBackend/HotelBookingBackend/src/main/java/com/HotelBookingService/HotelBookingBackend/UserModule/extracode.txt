@@ -1,0 +1,39 @@
+-- In the post of addUser
+//Let's add the bookingId
+            List<BookingEntity> bookings = new ArrayList<>();
+            for(Long bookingId : addUserDTO.getBookingIds()) {
+                Optional<BookingEntity> b = this.bookingRepository.findById(bookingId);
+                if (b.isPresent()) {
+                    // If the booking is done by some other user, you shouldn't update it.
+                    BookingEntity booking = b.get();
+                    if(booking.getUser().equals(user)){
+                        bookings.add(booking);
+                    }else{
+
+                        throw new EntityExistsException("Trying to update booking that's not created by you");
+                    }
+
+                }else{
+                    throw new EntityNotFoundException("Booking with id " + bookingId + " not found");
+                }
+            }
+            user.setBookings(bookings);
+            // Let's add the roomId
+            List<RoomEntity> rooms = new ArrayList<>();
+            for(Long roomId : addUserDTO.getRoomIds()) {
+                Optional<RoomEntity> r = this.roomRepository.findById(roomId);
+                if (r.isPresent()) {
+                    // If the room is created by someother user, you shouldn't update it.
+                    RoomEntity room = r.get();
+                    if(room.getCreatedByUser().equals(user)) {
+                        rooms.add(room);
+                    }else{
+
+                        throw new EntityExistsException("Trying to update room that's not created by you");
+                    }
+                }else{
+                    throw new EntityNotFoundException("Room with id " + roomId + " not found");
+                }
+            }
+            user.setRooms(rooms);
+---------------------------------------------

@@ -1,0 +1,55 @@
+1. bookings in the user are going in the infinite loop!
+https://dev.to/jhonifaber/hibernate-onetoone-onetomany-manytoone-and-manytomany-8ba
+A. [Solved] with adding @JsonIgnore to all of my relationships
+
+
+2. how to get rooms between startDate and endDate of filter.
+    -> the booking_id which is in the rooms table should be the nextBooking, which is not a forever thing!
+    -> Should it be like a corn job, that goes through the database
+    -> [Possible Solution] --> go through bookings, get roomIds that are in between StartDate and EndDate, then
+        get all rooms that are not in that list!
+    -> [Solved] Simple Join query done the job for now, Also learnt that in Spring JPARepositories and ENTITIES,
+    while using named queries, you can directly use other entities as if tables are served to you, spring does a
+    lot in the background!
+
+3. Design Mistake in Database Relationships!
+    -> I made it as room -> booking is oneToMany thinking at any time, only room is linked to one booking!
+    -> That's true, but for business use case, the bookings will have previous as well as upcoming also,
+    -> We need to model it as ManyToMany.
+    -> Then there will junction table containing b_id, r_id.
+    -> [Solved/Refactored] -> It's very easy in the spring data jpa to change it!
+
+    ->Again converting back to ManyToOne kind of relation, since we will be able to accept multiple rooms
+        selection with respective dates, we will give a virtual cart experience make it look like a single booking
+        In the backend we process it like a multiple bookings!
+
+4. What if in a booking, multiple rooms are booked with multiple start and end dates?
+        --> The biggest thing is like, each room can have different start and End Date! this changes everything
+        --> [Idea] One thing we can do is, from the frontend side, we will just continuously add each of them as objects
+        which will look like
+        [We will make sure of each availability before only then he will be able to add it]
+        [You must also check just before sending all those to the server and then only do 
+        add booking on each!]
+        [
+            {
+                roomId: ,
+                startDate: ,
+                endDate: ,
+            },
+            {
+                roomId: ,
+                startDate: ,
+                endDate: ,
+            }
+        ]
+        Let each can have a single booking! therefore the relation becomes a one to one,
+        Each booking can only be related to one room!
+
+        In the frontend we can make it look like adding mutliple ones added to the cart and then 
+        when user checksout, we can book each one in the backend!
+
+        maybe we can take the same request object and do it one by one!
+
+        -> One more improvement is that, use a messaging queue, and send it to backend asynchronously!
+
+5. The rooms, when showing availability, all the rooms getting changed not just one!
