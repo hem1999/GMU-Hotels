@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+</head>
+<body>
+    <p th:text="'Hello '+${bookedBy}+','"></p>
+    <p>This email is to confirm your recent booking on GMU-Hotels website,Below are the details: </p>
+
+    <div>
+        <p>room name: <span th:text="${roomName}"></span></p>
+        <p>room type: <span th:text="${roomType}"></span></p>
+        <p>room Capacity: <span th:text="${roomCapacity}"></span></p>
+        <p>Address: <span th:text="${roomAddress}"></span></p>
+        <p>State: <span th:text="${roomState}"></span></p>
+        <p>Zipcode: <span th:text="${roomZip}"></span></p>
+        <p>Country: <span th:text="${roomCountry}"></span></p>
+        <p>Booked From <em th:text="${startDate}"></em> to <em th:text="${endDate}"></em></p>
+        <p>Total Price: <span th:text="${price}"></span></p>
+    </div>
+
+</body>
+</html>

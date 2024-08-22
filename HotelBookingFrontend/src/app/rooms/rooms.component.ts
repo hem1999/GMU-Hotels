@@ -41,7 +41,6 @@ export class RoomsComponent implements OnInit{
     allRooms = [];
     this.hotelApi.getAllRooms().subscribe({
       next:  res => {
-        console.log(res);
         this.rooms.set(res);
       }
     })

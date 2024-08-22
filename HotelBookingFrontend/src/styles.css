@@ -3,20 +3,23 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer components{
-    .blue-btn{
-        @apply w-[100px] h-10 m-2 p-0  rounded-md bg-blue-400 border-blue-500 border-solid border-4;
-    }
+@layer components {
+  .blue-btn {
+    @apply w-[100px] h-10 m-2 p-0  rounded-md bg-blue-400 border-blue-500 border-solid border-4;
+  }
 
-    .sim-input{
-        @apply w-[90%] h-8 mx-5 my-2 border-solid border-2 border-slate-400 focus:border-slate-400 focus:border-4 focus:ring-0 outline-none rounded;
-    }
+  .sim-input {
+    @apply w-[90%] h-8 mx-5 my-2 border-solid border-2 border-slate-400 focus:border-slate-400 focus:border-4 focus:ring-0 outline-none rounded;
+  }
+  .sim-input-no-width {
+    @apply h-8 mx-5 my-2 border-solid border-2 border-slate-400 focus:border-slate-400 focus:border-4 focus:ring-0 outline-none rounded;
+  }
 
-  .horizontal{
+  .horizontal {
     @apply flex justify-center;
   }
 
-  .vertical{
+  .vertical {
     @apply flex flex-col justify-center;
   }
 

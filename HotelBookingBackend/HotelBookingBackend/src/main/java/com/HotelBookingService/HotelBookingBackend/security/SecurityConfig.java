@@ -44,8 +44,8 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(
                         //authorizes requests with urls to permit all and at the end says all other requests need to be authenticated.
-                        req -> req.requestMatchers("/auth/**",
-                                    "/rooms/filter","/rooms/{id}","/rooms" //Any customer should be able to view rooms and check availability without logging in!
+                        req -> req.requestMatchers("/auth/**","auth/validateToken",
+                                        "/rooms/available/**","/rooms/filter","/rooms/{id}","/rooms" //Any customer should be able to view rooms and check availability without logging in!
                                 ).permitAll()
                                 .requestMatchers("/rooms/add","/rooms/update","/rooms/delete/**").hasRole("ADMIN") // making sure only  admins can do this!
                                 .requestMatchers("/user/updateUser").authenticated()

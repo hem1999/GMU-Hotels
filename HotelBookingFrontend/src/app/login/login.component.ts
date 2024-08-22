@@ -46,9 +46,11 @@ export class LoginComponent {
       next: res => {
         // sessionStorage.setItem("hotel_jwtToken",res.jwtToken);
         // console.log(res);
-        this.authService.setJwtToken(res.jwtToken);
-        this.authService.setUserId(res.userId);
-        this.authService.setRole(res.userType == 'ADMIN' ? UserType.ADMIN : UserType.USER);
+        // this.authService.setJwtToken(res.jwtToken);
+        // this.authService.setUserId(res.userId);
+        // this.authService.setRole(res.userType == 'ADMIN' ? UserType.ADMIN : UserType.USER);
+        let currentRole:UserType = res.userType == 'ADMIN' ? UserType.ADMIN : UserType.USER;
+        this.authService.saveAuth(res.jwtToken,res.userId,currentRole);
         this.authService.activateSignIn();
         this.router.navigate(['rooms']);
       },

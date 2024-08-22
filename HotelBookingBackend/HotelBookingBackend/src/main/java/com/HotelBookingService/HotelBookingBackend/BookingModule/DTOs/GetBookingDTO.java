@@ -9,8 +9,6 @@ import lombok.Setter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import java.util.HashMap;
-import java.util.Map;
 
 @Getter
 @Setter
@@ -23,6 +21,8 @@ public class GetBookingDTO {
     private long roomId;
     private Long customerId;
     private String customerName;
+    private String roomName;
+    private String roomAddress, roomCity, roomState, roomZip, roomCountry, roomPhone, roomMainImgSrc;
 
     public GetBookingDTO makeGetBookingDTOFromBookingEntity(BookingEntity bookingEntity) {
         GetBookingDTO getBookingDTO = new GetBookingDTO();
@@ -32,9 +32,17 @@ public class GetBookingDTO {
         getBookingDTO.setEndDate(bookingEntity.getEndDate());
         getBookingDTO.setCustomerId(bookingEntity.getUser().getUserId());
         getBookingDTO.setCustomerName(bookingEntity.getUser().getFirstName()+" "+bookingEntity.getUser().getLastName());
-        getBookingDTO.setRoomId(bookingEntity.getRoom().getRoomId());
+        RoomEntity roomEntity = bookingEntity.getRoom();
+        getBookingDTO.setRoomId(roomEntity.getRoomId());
+        getBookingDTO.setRoomName(roomEntity.getRoomName());
+        getBookingDTO.setRoomAddress(roomEntity.getRoomAddress());
+        getBookingDTO.setRoomCity(roomEntity.getRoomCity());
+        getBookingDTO.setRoomState(roomEntity.getRoomState());
+        getBookingDTO.setRoomZip(roomEntity.getRoomZip());
+        getBookingDTO.setRoomCountry(roomEntity.getRoomCountry());
+        getBookingDTO.setRoomPhone(roomEntity.getRoomPhone());
+        getBookingDTO.setRoomMainImgSrc(roomEntity.getMainImgSrc());
         return getBookingDTO;
-
     }
 
 }

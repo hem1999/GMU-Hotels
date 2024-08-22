@@ -162,7 +162,7 @@ public class RoomServiceImpl implements RoomServices{
         ).orElseThrow(
                 () -> new EntityNotFoundException("Room not found with id: "+roomId)
         );
-        return this.roomRepository.roomAvailabilityBetweenStartDateAndEndDate(roomId, startDate, endDate);
+        return this.roomRepository.roomAvailabilityBetweenStartDateAndEndDate(roomId, startDate, endDate) != null;
     }
 
 }

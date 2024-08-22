@@ -1,5 +1,6 @@
 package com.HotelBookingService.HotelBookingBackend.security.auth;
 
+import com.HotelBookingService.HotelBookingBackend.security.jwt.JwtService;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,15 @@ import java.util.Map;
 public class AuthenticationController {
 
     private final AuthenticationService authService;
+    private final JwtService jwtService;
+
+    @PostMapping("/validateToken")
+    public ResponseEntity<?> validateToken(@RequestBody ValidateRequestDTO validateRequestDTO) {
+        if(!jwtService.isTokenExpired(validateRequestDTO.getJwtToken())){
+            return ResponseEntity.status(HttpStatus.OK).build();
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(

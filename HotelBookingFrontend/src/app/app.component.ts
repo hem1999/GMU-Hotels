@@ -21,6 +21,7 @@ export class AppComponent {
   }
 
   ngOnInit(){
+    this.IsLoggedIn = this.authService.checkLoginStatus();
     this.authService.isLoggedIn$.subscribe(
       res => this.IsLoggedIn = res
     )
@@ -29,11 +30,6 @@ export class AppComponent {
 
   setUpUserId(){
     this.router.navigateByUrl(`profile/${this.authService.getUserId()}`);
-  }
-
-  logout(){
-    this.authService.activateLogout();
-    this.router.navigateByUrl("rooms");
   }
 
   

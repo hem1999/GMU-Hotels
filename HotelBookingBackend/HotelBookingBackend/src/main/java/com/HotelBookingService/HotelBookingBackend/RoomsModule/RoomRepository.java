@@ -10,5 +10,5 @@ import java.util.List;
 public interface RoomRepository extends JpaRepository<RoomEntity,Long> {
 
     List<RoomEntity> availableRoomsBetweenStartDateAndEndDate(LocalDate startDate, LocalDate endDate);
-    Boolean roomAvailabilityBetweenStartDateAndEndDate(Long roomId, LocalDate startDate, LocalDate endDate);
+    Integer roomAvailabilityBetweenStartDateAndEndDate(Long roomId, LocalDate startDate, LocalDate endDate);
 }

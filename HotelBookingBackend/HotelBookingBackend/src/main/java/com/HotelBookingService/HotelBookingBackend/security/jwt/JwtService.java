@@ -56,7 +56,7 @@ public class JwtService {
         //Checing if the fetched username and username from userDetails are same, then we are checking the expiry!
     }
 
-    private boolean isTokenExpired(String jwtToken) {
+    public boolean isTokenExpired(String jwtToken) {
         //We are using a method called extractExpiry and checking if the expiration date is before now!
         return extractExpiry(jwtToken).before(new Date());
     }

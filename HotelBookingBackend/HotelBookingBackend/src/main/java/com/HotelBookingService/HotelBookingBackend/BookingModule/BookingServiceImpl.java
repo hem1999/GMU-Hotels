@@ -7,17 +7,19 @@ import com.HotelBookingService.HotelBookingBackend.RoomsModule.RoomEntity;
 import com.HotelBookingService.HotelBookingBackend.RoomsModule.RoomRepository;
 import com.HotelBookingService.HotelBookingBackend.UserModule.UserEntity;
 import com.HotelBookingService.HotelBookingBackend.UserModule.UserRepository;
+
 import com.HotelBookingService.HotelBookingBackend.security.email.EmailService;
 import com.HotelBookingService.HotelBookingBackend.security.email.EmailTemplateName;
-
+import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
@@ -30,14 +32,14 @@ public class BookingServiceImpl implements BookingServices{
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
     private final EmailService emailService;
-    public Long addOneBooking(AddBookingDTO addBookingDTO) {
+    public Long addOneBooking(AddBookingDTO addBookingDTO) throws MessagingException {
         RoomEntity r = roomRepository.findById(addBookingDTO.getRoomId()).orElseThrow(
                 () -> new EntityNotFoundException("Room not found with roomId: " + addBookingDTO.getRoomId())
         );
         UserEntity user = userRepository.findById(addBookingDTO.getUserId()).orElseThrow(
                 () -> new UsernameNotFoundException("User not found with userId: " + addBookingDTO.getUserId())
         );
-        if(roomRepository.roomAvailabilityBetweenStartDateAndEndDate(r.getRoomId(), addBookingDTO.getStartDate(), addBookingDTO.getEndDate())){
+        if(roomRepository.roomAvailabilityBetweenStartDateAndEndDate(r.getRoomId(), addBookingDTO.getStartDate(), addBookingDTO.getEndDate()) != null){
             BookingEntity b = BookingEntity.builder()
                     .bookingDate(addBookingDTO.getBookingDate())
                     .startDate(addBookingDTO.getStartDate())
@@ -46,6 +48,29 @@ public class BookingServiceImpl implements BookingServices{
                     .room(r)
                     .build();
             BookingEntity saved_b =  bookingRepository.save(b);
+            //Send the email!
+            Map<String, Object> msgInfo = new HashMap<>();
+            //add the info for the email!
+            System.out.println(user.getUsername());
+            msgInfo.put("bookedBy",user.getUsername());
+            msgInfo.put("subject", "booking confirmation with the orderId: "+saved_b.getBookingId());
+            msgInfo.put("roomName",r.getRoomName());
+            msgInfo.put("roomType",r.getRoomType());
+            msgInfo.put("roomAddress",r.getRoomAddress());
+            msgInfo.put("roomCapacity",r.getRoomCapacity());
+            msgInfo.put("startDate",addBookingDTO.getStartDate());
+            msgInfo.put("endDate",addBookingDTO.getEndDate());
+            msgInfo.put("roomCity",r.getRoomCity());
+            msgInfo.put("roomState",r.getRoomState());
+            msgInfo.put("roomCountry",r.getRoomCountry());
+            msgInfo.put("roomPhone",r.getRoomPhone());
+            msgInfo.put("roomZip",r.getRoomZip());
+            msgInfo.put("roomImgSrc",r.getMainImgSrc());
+            int diff = (int)ChronoUnit.DAYS.between(saved_b.getStartDate(),saved_b.getEndDate()); //saved_b.getEndDate() - saved_b.getStartDate()
+            msgInfo.put("price",r.getPricePerNight()*diff);
+            emailService.sendEmailWithProps(
+                    user.getEmail(), EmailTemplateName.BOOKING_CONFIRMATION,msgInfo
+            );
             return saved_b.getBookingId();
         }else{
             throw new RuntimeException("Room :"+r.getRoomName()+" is not available for asked dates");
@@ -82,8 +107,8 @@ public class BookingServiceImpl implements BookingServices{
         Optional<BookingEntity> oldBooking = bookingRepository.findById(updateBookingDTO.getBookingId());
         if(oldBooking.isPresent()) {
             BookingEntity b = oldBooking.get();
-            // TODO: First check for availabilities!
-            if(roomRepository.roomAvailabilityBetweenStartDateAndEndDate(updateBookingDTO.getRoomId(), updateBookingDTO.getStartDate(), updateBookingDTO.getEndDate())){
+            if(bookingRepository.roomAvailabilityBetweenStartDateAndEndDateButNotThisBooking(updateBookingDTO.getBookingId(),updateBookingDTO.getRoomId(), updateBookingDTO.getStartDate(), updateBookingDTO.getEndDate())!=null){
+                System.out.println("Yes it is available!");
                 b.setStartDate(updateBookingDTO.getStartDate());
                 b.setEndDate(updateBookingDTO.getEndDate());
                 this.bookingRepository.save(b);

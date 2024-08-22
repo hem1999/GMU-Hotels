@@ -20,6 +20,8 @@ import java.util.List;
 )
 @NamedQuery(
         name = "RoomEntity.roomAvailabilityBetweenStartDateAndEndDate",
+        //Here 1 is returned when it is true but null when it is false.
+        //So use something like Integer as return Type rather than Boolean!
         query= "select 1 from RoomEntity r where r.roomId = :roomId and not exists " +
                 "(select 1 from BookingEntity b where b.room=r and b.startDate<=:endDate and b.endDate>=:startDate)"
 )

@@ -1,8 +1,10 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { HttpClient, HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import { inject, Injectable, OnInit } from '@angular/core';
 import { RegistrationRequest, UserType } from '../registration/registration.model';
 import { loginRequest, loginResponse } from '../login/loginRequest.model';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, catchError, map } from 'rxjs';
+import { NotExpr } from '@angular/compiler';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -11,44 +13,73 @@ export class AuthService {
 
   private httpClient:HttpClient;
   private url = 'http://localhost:8081'
-  private role:UserType=UserType.USER;
-  private userId: string | null = null;
-  private isLoggedInSubject = new BehaviorSubject<boolean>(false);
-  isLoggedIn$ = this.isLoggedInSubject.asObservable();
-  private jwtToken: String | null = null;
+  private isLoggedIn:BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  isLoggedIn$ = this.isLoggedIn.asObservable();
+  isCurrentTokenValid = true; //For now let it be always true! later change it accordingly!
+  private router = inject(Router);
+
   constructor(httpClient: HttpClient) {
     this.httpClient = httpClient;
+    this.checkLoginStatus();
    }
 
-   setRole(role:UserType){
-      this.role = role;
+   
+
+   public saveAuth(jwtToken:string, userId:string, role:UserType){
+    sessionStorage.setItem('gmu_hotels_jwt_token',jwtToken);
+    sessionStorage.setItem('gmu_hotels_user_id',userId);
+    sessionStorage.setItem('gmu_hotels_user_role',role);
    }
 
-   setUserId(userId:string | null){
-    this.userId = userId;
-   }
+   
 
    getUserId(){
-    return this.userId;
+    return sessionStorage.getItem('gmu_hotels_user_id');
    }
 
-   setJwtToken(token: String | null){
-    this.jwtToken = token;
-   }
 
    getJwtToken<String>(){
-    return this.jwtToken;
+    return sessionStorage.getItem('gmu_hotels_jwt_token');
    }
 
+   checkLoginStatus(): boolean {
+    //TODO: Later! this.checkTokenValidity();
+    const isAuthenticated = sessionStorage.getItem('gmu_hotels_jwt_token') != null && this.isCurrentTokenValid;
+    this.isLoggedIn.next(isAuthenticated);
+    return isAuthenticated;
+  }
+
+  checkTokenValidity(){
+    // TODO: After long time of not using it should check for token validation and only it should respond!
+    if(sessionStorage.getItem('gmu_hotels_jwt_token') != null){
+      let jwtToken = sessionStorage.getItem('gmu_hotels_jwt_token');
+      this.isCurrentTokenValid = false;
+      this.httpClient.post(`${this.url}/auth/validate`,{jwtToken},{observe: 'response'}).pipe(
+        map(
+          res => {
+            console.log(res.status);
+            if(res.status==200){
+              this.isCurrentTokenValid = true;
+            }
+            if(res.status == 403){
+              this.activateLogout();
+              this.router.navigateByUrl("login");
+            }
+          }
+        )
+      ).subscribe();
+    }
+  }
+
    activateSignIn(){
-    this.isLoggedInSubject.next(true);
+    this.isLoggedIn.next(true);
    }
 
    activateLogout(){
-    this.jwtToken = null;
-    this.userId = null;
-    this.role = UserType.USER;
-    this.isLoggedInSubject.next(false);
+    sessionStorage.removeItem('gmu_hotels_jwt_token');
+    sessionStorage.removeItem('gmu_hotels_user_id');
+    sessionStorage.removeItem('gmu_hotels_user_role');
+    this.isLoggedIn.next(false);
    }
 
    

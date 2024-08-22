@@ -5,11 +5,10 @@ import com.HotelBookingService.HotelBookingBackend.RoomsModule.DTOs.GetRoomDTO;
 import com.HotelBookingService.HotelBookingBackend.RoomsModule.DTOs.UpdateRoomDTO;
 import com.HotelBookingService.HotelBookingBackend.UserModule.UserEntity;
 import com.HotelBookingService.HotelBookingBackend.UserModule.UserRepository;
-import com.HotelBookingService.HotelBookingBackend.security.jwt.JwtService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.lang.NonNull;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,12 +25,10 @@ import java.util.Optional;
 @RequestMapping("/rooms")
 public class RoomsController {
     private final RoomServiceImpl roomServiceImpl;
-    private final JwtService jwtService;
     private final UserRepository userRepository;
 
-    public RoomsController(RoomServiceImpl roomServiceImpl, JwtService jwtService, UserRepository userRepository) {
+    public RoomsController(RoomServiceImpl roomServiceImpl, UserRepository userRepository) {
         this.roomServiceImpl = roomServiceImpl;
-        this.jwtService = jwtService;
         this.userRepository = userRepository;
     }
     @GetMapping()
@@ -47,7 +44,7 @@ public class RoomsController {
     }
 
     @GetMapping("/available")
-    public ResponseEntity<?> isRoomAvailable(@RequestParam Long roomId, @RequestParam LocalDate startDate, @RequestParam LocalDate endDate){
+    public ResponseEntity<?> isRoomAvailable(@RequestParam @NonNull  Long roomId, @RequestParam @NonNull LocalDate startDate, @RequestParam LocalDate endDate){
         try{
             boolean isAvailable = this.roomServiceImpl.isRoomAvailable(roomId, startDate, endDate);
             return new ResponseEntity<>(isAvailable, HttpStatus.OK);

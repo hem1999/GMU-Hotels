@@ -8,7 +8,6 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Setter
@@ -16,6 +15,11 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@NamedQuery(
+        name="BookingEntity.roomAvailabilityBetweenStartDateAndEndDateButNotThisBooking",
+        query = "select 1 from RoomEntity  r where r.roomId=:roomId and not exists " +
+                "(select 1 from BookingEntity  b where b.room=r and b.startDate<=:endDate and b.endDate>=:startDate and b.id!=:bookingId)"
+)
 public class BookingEntity {
     @Id
     @GeneratedValue

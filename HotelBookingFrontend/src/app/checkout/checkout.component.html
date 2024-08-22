@@ -1,1 +1,72 @@
-<p>checkout works!</p>
+<h1>Payment</h1>
+<p>Pay and own the beautiful place for time being</p>
+
+<div class="flex justify-start mt-2">
+  <div class="w-[60%] ml-[15px]">
+    @for(booking of cartItems; track booking.roomId){
+    <div
+      class="bg-white shadow-md rounded-lg overflow-hidden mb-4 flex justify-between"
+    >
+      <div class="flex flex-col justify-center p-2">
+        <div class="flex justify-between mb-2">
+          <h3 class="text-xl font-bold text-gray-800">
+            {{ booking.roomName }}
+          </h3>
+          <p class="text-gray-600 font-bold ml-2 mt-1">
+            Start Date:
+            <span class="text-gray-800">{{ booking.startDate }}</span>
+          </p>
+          <p class="text-gray-600 font-bold ml-2 mt-1">
+            End Date: <span class="text-gray-800">{{ booking.endDate }}</span>
+          </p>
+          <p class="text-gray-800 font-bold ml-2 mt-1">
+            Price per Night: ${{ booking.pricePerNight.toFixed(2) }}
+          </p>
+        </div>
+        <div class="flex">
+          <p class="text-gray-600 ml-2 font-bold">
+            Address:
+            <span class="text-gray-800">{{ booking.roomAddress }}</span>
+          </p>
+          <p class="text-gray-600 ml-2 font-bold">
+            City: <span class="text-gray-800">{{ booking.roomCity }}</span>
+          </p>
+          <p class="text-gray-600 ml-2 font-bold">
+            Zipcode: <span class="text-gray-800">{{ booking.roomZip }}</span>
+          </p>
+          <p class="text-gray-600 ml-2 font-bold">
+            Capacity:
+            <span class="text-gray-800">{{ booking.roomCapacity }}</span>
+            persons
+          </p>
+        </div>
+      </div>
+      <div class="ml-1">
+        <!-- Edit Button -->
+        <button class="blue-btn" (click)="removeThisBooking(booking)">Cancel</button>
+      </div>
+    </div>
+
+    }
+  </div>
+  <div
+    class="w-[30%] ml-2 border-2 border-slate-800 rounded bg-white shadow-md overflow-hidden"
+  >
+    <h2 class="text-center text-xl">Payment Details</h2>
+    <!-- Total Pay showcase and be done with it! -->
+    @for(b of invoice | keyvalue; track b.key){
+    <div class="border-b-slate-600 border-2 flex justify-between">
+      <p class="m-4 text-xl text-slate-600">{{ b.key }}</p>
+      <p class="m-4 text-xl text-slate-600">{{ b.value }}</p>
+    </div>
+    }
+    <div class="flex mt-2 justify-between">
+      <p class="m-2 font-bold">Final Amount</p>
+      <p class="m-2 font-bold text-2xl">{{ totalCartValue }}</p>
+    </div>
+
+    <div class="flex justify-center mt-2">
+        <button class="blue-btn" (click)="onCheckOut()">Checkout</button>
+    </div>
+  </div>
+</div>

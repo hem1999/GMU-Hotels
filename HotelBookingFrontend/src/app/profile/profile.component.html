@@ -5,14 +5,9 @@
     [ngClass]="{ 'bg-red-400 border-red-500': showUpdateForm == true }"
   >
     {{ updateButtonText }}
-  </button>
-  <button
-    class="blue-btn"
-    (click)="toggleBookings()"
-    [ngClass]="{ 'bg-red-400 border-red-500': showBookings == true }"
-  >
-    {{ bookingButtonText }}
-  </button>
+</button>
+
+  
 
   @if(userType == 'ADMIN'){
     <button
@@ -22,6 +17,8 @@
     Add Room
   </button>
   }
+
+  <button class="blue-btn" (click)="logout()">Logout</button>
 </div>
 <div class="flex justify-center mt-5">
   @if(showUpdateForm){
@@ -113,26 +110,84 @@
   </div>
   }
 </div>
-@if(showBookings){
-<app-list-bookings
-  [bookings]="currentUserProfile().bookings"
-></app-list-bookings>
-}
 
-@if(!showBookings && !showUpdateForm){
-<div>
-  <h1 class="text-3xl">Hello {{ this.currentUserProfile().username }}</h1>
-  <div>
-    <p>First name: {{ this.currentUserProfile().firstName }}</p>
-    <p>Last name: {{ this.currentUserProfile().lastName }}</p>
-    <p>Email: {{ this.currentUserProfile().email }}</p>
-    <p>Phone: {{ this.currentUserProfile().phone }}</p>
-    <p>Address: {{ this.currentUserProfile().address }}</p>
-    <p>City: {{ this.currentUserProfile().city }}</p>
-    <p>State: {{ this.currentUserProfile().state }}</p>
-    <p>Zip: {{ this.currentUserProfile().zip }}</p>
-    <p>Country: {{ this.currentUserProfile().country }}</p>
-    <p>UserType: {{ this.currentUserProfile().userType }}</p>
+
+@if(!showUpdateForm){
+<h1 class="text-3xl text-center font-bold mb-2">Hello <span class="text-slate-800">{{ this.currentUserProfile().username }}</span></h1>
+<div class="flex justify-center">
+  <div class="bg-white shadow-lg border-white border-2 rounded-lg w-[45%] p-2 text-lg">
+    <div class="flex justify-start m-2 flex-wrap">
+      <p class="m-2"><span class="text-slate-600 font-bold">First name:</span> {{ this.currentUserProfile().firstName }}</p>
+      <p class="m-2"><span class="text-slate-600 font-bold">Last name:</span> {{ this.currentUserProfile().lastName }}</p>
+      <p class="m-2"><span class="text-slate-600 font-bold">UserType:</span> {{ this.currentUserProfile().userType }}</p>
+    </div>
+    <div class="flex justify-start m-2 flex-wrap">
+    <p class="m-2"><span class="text-slate-600 font-bold">Email:</span> {{ this.currentUserProfile().email }}</p>
+    <p class="m-2"><span class="text-slate-600 font-bold">Phone:</span> {{ this.currentUserProfile().phone }}</p>
+  </div>
+  <div class="flex justify-start m-2 flex-wrap">
+    <p class="m-2"><span class="text-slate-600 font-bold">Address:</span> {{ this.currentUserProfile().address }}</p>
+    <p class="m-2"><span class="text-slate-600 font-bold">City:</span> {{ this.currentUserProfile().city }}</p>
+  </div>
+    <div class="flex justify-start m-2 flex-wrap">
+    <p class="m-2"><span class="text-slate-600 font-bold">State:</span> {{ this.currentUserProfile().state }}</p>
+    <p class="m-2"><span class="text-slate-600 font-bold">Zipcode:</span> {{ this.currentUserProfile().zip }}</p>
+    <p class="m-2"><span class="text-slate-600 font-bold">Country:</span> {{ this.currentUserProfile().country }}</p>
+  </div>
+    
   </div>
 </div>
 }
+
+  <nav class="border-b-4 border-blue-400 mb-4 mt-2">
+    <ul class="flex justify-start">
+        <li (click)="updateBookingsView(1)" 
+            class="mx-8 text-[20px] border-r-4 border-l-4 border-t-4 cursor-pointer border-blue-400 rounded p-2 bg-blue-200"
+            [ngClass]="{'underline bg-blue-300': activeTab==1}">Upcoming</li>
+        <li (click)="updateBookingsView(2)"
+            class="mx-8 text-[20px] border-r-4 border-l-4 border-t-4 cursor-pointer border-blue-400 rounded p-2 bg-blue-200"
+            [ngClass]="{'underline bg-blue-300': activeTab==2}"
+            >Current</li>
+        <li (click)="updateBookingsView(3)"
+            class="mx-8 text-[20px] border-r-4 border-l-4 border-t-4 cursor-pointer border-blue-400 rounded p-2 bg-blue-200"
+            [ngClass]="{'underline bg-blue-300': activeTab==3}"
+            >Previous</li>
+    </ul>
+</nav>
+<main>
+    <div>
+        @for(booking of visibleBookings; track booking.bookingId){
+            <div class="flex justify-between border-2 p-2 bg-white shadow-lg rounded-lg border-white mb-2 w-[95%] mx-auto">
+                <div class="flex justify-start">
+                    <div class="mx-2">
+                      <img src="{{booking.roomMainImgSrc}}" alt="room_image" class="w-[60px] h-full rounded-lg shadow-lg" (click)="goToRoom(booking.roomId)">
+                    </div>
+                    <div>
+                      <h1>booking id: {{ booking.bookingId }}</h1>
+                      @if(this.updatingBooking!=null &&  this.updatingBooking == booking.bookingId){
+                        <p>Booked from <input type="date" class="sim-input-no-width" [formControl]="newStartDate"> to <input type="date" class="sim-input-no-width" [formControl]="newEndDate">  <button (click)="onClickUpdateBooking(booking)" class="blue-btn">submit</button></p>
+                      }@else {
+                        <p>Booked from {{ booking.startDate }} to {{ booking.endDate}} </p>
+                      }
+                      
+                      <p>Address: {{booking.roomAddress}}, {{booking.roomCity}}, {{ booking.roomState}},{{booking.roomZip}}      <span class="ml-3">Phone: {{booking.roomPhone}}</span></p>
+                    </div>
+                </div>
+                @if(this.activeTab==1){
+                    <div>
+                        <button class="mx-2 h-full"
+                            (click)="updateBooking(booking)"
+                        >
+                            <svg class="h-8 w-8 text-blue-500 hover:fill-blue-400"  viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <path d="M9 7 h-3a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-3" />  <path d="M9 15h3l8.5 -8.5a1.5 1.5 0 0 0 -3 -3l-8.5 8.5v3" />  <line x1="16" y1="5" x2="19" y2="8" /></svg>
+                        </button>
+                        <button class="mx-2 mt-1 h-full"
+                            (click)="deleteBooking(booking)"
+                        >
+                            <svg class="h-8 w-8 text-red-500 hover:fill-red-400"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round">  <circle cx="12" cy="12" r="10" />  <line x1="15" y1="9" x2="9" y2="15" />  <line x1="9" y1="9" x2="15" y2="15" /></svg>
+                        </button>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</main>

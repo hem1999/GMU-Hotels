@@ -13,6 +13,7 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -68,6 +69,17 @@ public class EmailService {
         //TODO: Throw exceptions if expected fields doesn't exist in msgInfos
         //For now, subject and user name are must
 
+        List<String> msgAttributes = List.of("subject", "bookedBy",
+                "roomName", "roomType", "roomCapacity",
+                "roomPhone", "roomAddress", "roomState", "roomCity", "roomZip", "roomCountry",
+                "roomImgSrc", "startDate", "endDate", "price");
+
+        for(String att : msgAttributes){
+            if(!(msgInfo.containsKey(att))){
+                throw new MessagingException("Attribute " + att + " not found in msgInfo!");
+            }
+        }
+
         String templateName;
         if(emailTemplate == null){
             templateName = "confirm-email";
@@ -79,9 +91,6 @@ public class EmailService {
         MimeMessageHelper msgHelper = new MimeMessageHelper(
                 msg,MimeMessageHelper.MULTIPART_MODE_MIXED, StandardCharsets.UTF_8.name()
         );
-
-        // Map<String, Object> msgProperties = new HashMap<>();
-        // msgProperties.putAll(msgInfo);
         
         Context context = new Context(); //This is thymleaf context
         context.setVariables(msgInfo);
@@ -94,7 +103,7 @@ public class EmailService {
 
         String template = templateEngine.process(templateName, context);
         msgHelper.setText(template, true);
-
+        System.out.println("Email Sent!");
         mailSender.send(msg);
     }
 }

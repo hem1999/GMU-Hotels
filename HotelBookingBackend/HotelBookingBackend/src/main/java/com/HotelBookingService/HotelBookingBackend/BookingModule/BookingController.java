@@ -75,7 +75,7 @@ public class BookingController {
     public ResponseEntity<String> deleteBooking(@PathVariable Long id) {
         boolean isValid = this.bookingService.deleteBooking(id);
         if (isValid) {
-            return ResponseEntity.ok("Deleted!");
+            return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();
     }
