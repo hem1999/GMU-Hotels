@@ -7,6 +7,8 @@ import java.util.List;
 public interface FeedbackRepository extends JpaRepository<FeedbackEntity,FeedbackId> {
 
 
-    public List<FeedbackEntity> customGetFeedbackByRoomId(Long roomId);
-    public List<FeedbackEntity> customGetFeedbackByUserId(Long userId);
+    List<FeedbackEntity> customGetFeedbackByRoomId(Long roomId);
+    List<FeedbackEntity> customGetFeedbackByUserId(Long userId);
+    Integer GetFeedbackRatingAvgByRoom(Long roomId);
+    Integer GetFeedbackRatingAvgByUserId(Long userId);
 }

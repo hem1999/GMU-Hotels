@@ -4,6 +4,7 @@ import { AuthService } from './auth.service';
 import { Route, Router } from '@angular/router';
 import { Room } from '../rooms/room.model';
 import { addBookingType, Booking, updateBookingType } from '../profile/booking.model';
+import { addFeedbackType, Feedback } from '../single-room/feedback.model';
 
 @Injectable({
   providedIn: 'root'
@@ -26,6 +27,10 @@ export class HotelApiService {
     }
     //No need of authorization header, since we have permitted all to rooms!
     return this.httpClient.get<Room>(`${this.url}/rooms/${roomId}`);
+  }
+
+  getAvailableRooms(startDate: String, endDate: String){
+    return this.httpClient.get<Room[]>(`${this.url}/rooms/filter?startDate=${startDate}&endDate=${endDate}`);
   }
 
   getUserDetails(userId: String | null){
@@ -69,6 +74,30 @@ export class HotelApiService {
     );
   }
 
+  updateRoom(requestBody:FormData){
+    if(this.authService.getJwtToken() == null){
+      this.route.navigateByUrl("login");
+    }
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.authService.getJwtToken()}`
+    });
+    return this.httpClient.put(
+      `${this.url}/rooms/update`,requestBody,{headers}
+    )
+  }
+
+  deleteRoom(roomId: String){
+    if(this.authService.getJwtToken() == null){
+      this.route.navigateByUrl('login');
+    }
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.authService.getJwtToken()}`
+    });
+    return this.httpClient.delete(
+      `${this.url}/rooms/delete/${roomId}`,{headers}
+    );
+  }
+
   getIsRoomAvailable(roomId:string | undefined, startDate: String, endDate: String){
     return this.httpClient.get<boolean>(
       `${this.url}/rooms/available?roomId=${roomId}&startDate=${startDate}&endDate=${endDate}`
@@ -106,8 +135,31 @@ export class HotelApiService {
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${this.authService.getJwtToken()}`
     });
-    console.log(bookingRequest);
     return this.httpClient.put(`${this.url}/bookings/updateBooking`,bookingRequest,{headers:headers, observe:"response"},);
+  }
+
+
+  getFeedbacks(roomId: string | undefined){
+    return this.httpClient.get<Feedback[] | []>(
+      `${this.url}/feedback/filter?idType=room&idValue=${roomId}`
+    );
+  }
+
+  getAvgRating(roomId:Number){
+    return this.httpClient.get(
+      `${this.url}/avgRating?idType=room&idValue=${roomId}`
+    )
+  }
+
+  postFeedback(requestBody:addFeedbackType){
+    if(this.authService.getJwtToken() == null){
+      this.route.navigateByUrl('login');
+    }
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.authService.getJwtToken()}`
+    });
+
+    return this.httpClient.post(`${this.url}/feedback/addFeedback`,requestBody, {headers});
   }
 
  

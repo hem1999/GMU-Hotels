@@ -2,10 +2,10 @@ package com.HotelBookingService.HotelBookingBackend.UserModule.DTOs;
 
 import com.HotelBookingService.HotelBookingBackend.BookingModule.BookingEntity;
 import com.HotelBookingService.HotelBookingBackend.BookingModule.DTOs.GetBookingDTO;
+import com.HotelBookingService.HotelBookingBackend.RoomsModule.DTOs.GetRoomDTO;
 import com.HotelBookingService.HotelBookingBackend.RoomsModule.RoomEntity;
 import com.HotelBookingService.HotelBookingBackend.UserModule.UserEntity;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ public class GetUserDTO {
     // It will have 3 keys: Previous (bookings before today),
     // Current (startDate < bookingDate < endDate)
     // Upcoming (startDate > today)
-    private Map<Long, String> rooms;
+    private List<GetRoomDTO> rooms;
     private String userType;
     private String state;
     private String city;
@@ -51,9 +51,11 @@ public class GetUserDTO {
         
 
         //Rooms:
-        Map<Long, String> rooms = new HashMap<>();
+        List<GetRoomDTO> rooms = new ArrayList<>();
         for (RoomEntity r : userEntity.getRooms()) {
-            rooms.put(r.getRoomId(),r.getRoomName());
+//            rooms.add(new GetRoomDTO().makeGetRoomDTOFromRoomEntity(r));
+            GetRoomDTO getRoomDTO = new GetRoomDTO().makeGetRoomDTOFromRoomEntity(r);
+            rooms.add(getRoomDTO);
         }
 
         getUserDTO.setRooms(rooms);

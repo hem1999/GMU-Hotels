@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal, WritableSignal } from '@angular/core';
+import { Component, inject, OnInit, Signal, signal, WritableSignal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Room } from '../rooms/room.model';
 import { HotelApiService } from '../services/hotel-api.service';
@@ -6,6 +6,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { AuthService } from '../services/auth.service';
 import { CartService } from '../services/cart.service';
 import { cartBooking } from '../checkout/cartItem.model';
+import { addFeedbackType, Feedback } from './feedback.model';
 @Component({
   selector: 'app-single-room',
   standalone: true,
@@ -21,24 +22,27 @@ export class SingleRoomComponent implements OnInit{
   authService = inject(AuthService);
   cartService = inject(CartService);
   currentRoomId: string | undefined = undefined;
-  currentRoom: WritableSignal<Room|null> = signal(null); 
+  currentRoom: WritableSignal<Room|null> = signal(null);
+  currentRoomFeedbacks: WritableSignal<Feedback[]|[]> = signal([]);
+  avgRating = 5;
   isRoomAvailable: boolean = false;
   availabilityForm = new FormGroup({
     startDate: new FormControl('',Validators.required),
     endDate: new FormControl('',Validators.required)
   })
+  currentUsrRating:Number = 0;
+
+  feedbackInput = new FormControl('',Validators.required);
 
   ngOnInit(){
     this.route.paramMap.subscribe(
       (params) => {
-        console.log(params);
         this.currentRoomId = params.get("roomId")?.toString()
-        console.log(params.get("roomId")?.toString());
-        console.log(this.currentRoomId);
       }
     );
 
     this.getRoomDetails();
+    this.getFeedbacks();
   }
 
   getRoomDetails(){
@@ -48,6 +52,17 @@ export class SingleRoomComponent implements OnInit{
           this.currentRoom.set(res);
         },
         error: err => console.log(err)
+      }
+    )
+  }
+
+  getFeedbacks(){
+    this.hotelApi.getFeedbacks(this.currentRoomId).subscribe(
+      {
+        next: res => {
+          console.log(res);
+          this.currentRoomFeedbacks.set(res);
+        }
       }
     )
   }
@@ -95,6 +110,8 @@ export class SingleRoomComponent implements OnInit{
             }
             this.cartService.addBooking(newBooking);
           }
+
+          alert("Added to cart!");
           
           
           }
@@ -104,5 +121,30 @@ export class SingleRoomComponent implements OnInit{
       }
     );
 
+  }
+
+  givenRating(rating:Number):void{
+    this.currentUsrRating = rating;
+  }
+
+
+  onSubmitFeedback(){
+    if(!this.authService.checkLoginStatus()){
+      this.router.navigateByUrl("login");
+      return ;
+    }
+    let requestBody:addFeedbackType = {
+      "roomId" : this.currentRoomId ? this.currentRoomId : '',
+      "feedback": this.feedbackInput.value??'',
+      "userId": this.authService.getUserId()??'',
+      "rating": this.currentUsrRating
+
+    }
+    this.hotelApi.postFeedback(requestBody).subscribe({
+      next: res => {
+        alert("Feedback addded!");
+        this.getFeedbacks();
+      }
+    })
   }
 }

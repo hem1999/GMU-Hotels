@@ -1,5 +1,7 @@
 package com.HotelBookingService.HotelBookingBackend.FeedbackModule;
 
+import com.HotelBookingService.HotelBookingBackend.FeedbackModule.DTOs.AddFeedbackDTO;
+import com.HotelBookingService.HotelBookingBackend.FeedbackModule.DTOs.GetFeedbackDTO;
 import com.HotelBookingService.HotelBookingBackend.RoomsModule.RoomEntity;
 import com.HotelBookingService.HotelBookingBackend.RoomsModule.RoomRepository;
 import com.HotelBookingService.HotelBookingBackend.UserModule.UserEntity;
@@ -29,8 +31,8 @@ public class FeedbackController {
     * Also it accepts localhost:8081/feedback?idType=user&idValue=2
     * It will get all the feedbacks given by user with id 2 */
 
-    @GetMapping("")
-    public ResponseEntity<List<FeedbackEntity>> feedbackForRoom(@RequestParam String idType, @RequestParam Long idValue ) {
+    @GetMapping("filter")
+    public ResponseEntity<List<GetFeedbackDTO>> feedbackForRoom(@RequestParam String idType, @RequestParam Long idValue ) {
         if(idType.equalsIgnoreCase("room")) {
             Optional<RoomEntity> r = this.roomRepository.findById(idValue);
             System.out.println("Is room present? "+r.isPresent());
@@ -55,12 +57,25 @@ public class FeedbackController {
 
     }
 
+    @GetMapping("avgRating")
+    public ResponseEntity<?> avgFeedback(@RequestParam String idType, @RequestParam Long idValue ) {
+        try{
+            var ans = this.feedbackService.averageRating(idValue, idType);
+            if(ans == null){
+                return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<>(ans,HttpStatus.OK);
+        }catch(Exception e){
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        }
+    }
 
 
-    @PostMapping("")
-    public ResponseEntity<FeedbackEntity> addFeedbackController(@RequestBody FeedbackEntity feedbackEntity) {
-        if(this.feedbackService.addFeedback(feedbackEntity)){
-            return new ResponseEntity<>(feedbackEntity,HttpStatus.CREATED);
+
+    @PostMapping("addFeedback")
+    public ResponseEntity<?> addFeedbackController(@RequestBody AddFeedbackDTO addFeedbackDTO) {
+        if(this.feedbackService.addFeedback(addFeedbackDTO)){
+            return new ResponseEntity<>(HttpStatus.CREATED);
         }
         return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
     }

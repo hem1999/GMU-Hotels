@@ -1,28 +1,60 @@
 <!-- Should be a filter -->
 <nav class="flex justify-between">
-    <div class="ml-[10%]">
-        <ul class="flex justify-center">
-            <li>Start Date: <input type="date" name="filterStartDate" [formControl]="filterStartDate" 
-                class="h-8 my-2 border-solid border-2 border-slate-400 focus:border-slate-400 focus:border-4 focus:ring-0 outline-none rounded"></li>
-            <li class="ml-6">End Date: <input type="date" name="filterEndDate" [formControl]="filterEndDate" 
-                class="h-8 my-2 border-solid border-2 border-slate-400 focus:border-slate-400 focus:border-4 focus:ring-0 outline-none rounded"></li>
-        </ul>
-    </div>
-    <div class="mr-[10%]">
-        <button class="bg-blue-400 border-2 border-blue-500 px-[10px] py-1 mt-2 rounded" (click)="onDateBasedFilter()">Show Available Rooms</button>
-        <button class="mx-3 bg-red-400 border-2 border-red-500 px-[10px] py-1 mt-2 rounded" (click)="onClearDateFilter()">Clear Filter</button>
-    </div>
+  <div class="ml-[10%]">
+    <ul class="flex justify-center">
+      <li>
+        Start Date:
+        <input
+          type="date"
+          name="filterStartDate"
+          [formControl]="filterStartDate"
+          class="h-8 my-2 border-solid border-2 border-slate-400 focus:border-slate-400 focus:border-4 focus:ring-0 outline-none rounded"
+        />
+      </li>
+      <li class="ml-6">
+        End Date:
+        <input
+          type="date"
+          name="filterEndDate"
+          [formControl]="filterEndDate"
+          class="h-8 my-2 border-solid border-2 border-slate-400 focus:border-slate-400 focus:border-4 focus:ring-0 outline-none rounded"
+        />
+      </li>
+      <li class="ml-6">
+        zipcode:
+        <input
+          type="text"
+          name="zipcode"
+          [formControl]="filterZip"
+          class="h-8 my-2 border-solid border-2 border-slate-400 focus:border-slate-400 focus:border-4 focus:ring-0 outline-none rounded"
+        />
+      </li>
+    </ul>
+  </div>
+  <div class="mr-[10%]">
+    <button
+      class="bg-blue-400 border-2 border-blue-500 px-[10px] py-1 mt-2 rounded"
+      (click)="onDateBasedFilter()"
+    >
+      Show Available Rooms
+    </button>
+    <button
+      class="mx-3 bg-red-400 border-2 border-red-500 px-[10px] py-1 mt-2 rounded"
+      (click)="onClearAllFilter()"
+    >
+      Clear Filter
+    </button>
+  </div>
 </nav>
-
 
 <!-- Location based filter -->
 <div class="flex justify-start flex-row flex-wrap overflow-visible">
   @for(room of rooms(); track room.roomId){
 
   <div
-    class="mx-5 my-3 border-2 border-slate-400 border-solid rounded-lg h-[25%] w-[30%] px-4 py-2 transition duration-200 hover:z-10 hover:scale-105 hover:bg-cyan-50 "
+    class="mx-5 my-3 border-2 border-slate-400 border-solid rounded-lg h-[25%] w-[30%] px-4 py-2 transition duration-200 hover:z-10 hover:scale-105 hover:bg-cyan-50"
     (click)="goToRoom(room.roomId)"
-    >
+  >
     <h2 class="text-center text-3xl mb-2 text-slate-600">
       {{ room.roomName }}
     </h2>
@@ -74,9 +106,21 @@
       </p>
     </div>
     @if(room.roomDescription.length > 80){
-    <p>{{ room.roomDescription.slice(0, 80) }} ...<a class="underline" routerLink="/room/{{room.roomId}}">View more</a></p>
+    <p>
+      {{ room.roomDescription.slice(0, 80) }} ...<a
+        class="underline"
+        routerLink="/room/{{ room.roomId }}"
+        >View more</a
+      >
+    </p>
     }@else {
-    <p>{{ room.roomDescription }} ...<a class="underline" routerLink="/room/{{room.roomId}}">View more</a></p>
+    <p>
+      {{ room.roomDescription }} ...<a
+        class="underline"
+        routerLink="/room/{{ room.roomId }}"
+        >View more</a
+      >
+    </p>
     }
 
     <div class="flex justify-start">
@@ -100,7 +144,7 @@
       </div>
       <div
         class="flex flex-col-reverse justify-start mb-1"
-        (click)="onCheckAvailability(room.roomId,room.roomName)"
+        (click)="onCheckAvailability(room.roomId, room.roomName)"
       >
         <svg
           class="h-10 w-10 text-slate-600 hover:fill-slate-400"

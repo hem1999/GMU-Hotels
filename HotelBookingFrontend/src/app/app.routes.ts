@@ -9,12 +9,17 @@ import { AddRoomComponent } from './add-room/add-room.component';
 import { SingleRoomComponent } from './single-room/single-room.component';
 import { CheckoutComponent } from './checkout/checkout.component';
 import { ThankyouComponent } from './thankyou/thankyou.component';
+import { UpdateRoomComponent } from './update-room/update-room.component';
 
 export const routes: Routes = [
     {
         path:"addRoom",
         component: AddRoomComponent
 
+    },
+    {
+        path:"updateRoom/:roomId",
+        component: UpdateRoomComponent
     },
     {
         path:"activate-account",

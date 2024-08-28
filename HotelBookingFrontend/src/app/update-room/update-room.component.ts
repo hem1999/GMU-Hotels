@@ -1,38 +1,30 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, inject } from '@angular/core';
 import {
-  ReactiveFormsModule,
-  FormGroup,
   FormControl,
+  FormGroup,
   Validators,
-  FormsModule,
-  FormControlName,
+  ReactiveFormsModule,
 } from '@angular/forms';
-import { AuthService } from '../services/auth.service';
 import { HotelApiService } from '../services/hotel-api.service';
-import { Router } from '@angular/router';
-
+import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService } from '../services/auth.service';
+import { Room } from '../rooms/room.model';
+AuthService;
 @Component({
-  selector: 'app-add-room',
+  selector: 'app-update-room',
   standalone: true,
   imports: [ReactiveFormsModule],
-  templateUrl: './add-room.component.html',
-  styleUrl: './add-room.component.css',
+  templateUrl: './update-room.component.html',
+  styleUrl: './update-room.component.css',
 })
-export class AddRoomComponent {
-  httpClient = inject(HttpClient);
+export class UpdateRoomComponent {
   authService = inject(AuthService);
   router = inject(Router);
+  route = inject(ActivatedRoute);
   hotelApi = inject(HotelApiService);
   image: File | null = null;
-
-  ngOnInit() {
-    if (this.authService.getUserId() == null) {
-      this.router.navigateByUrl('login');
-    }
-  }
-
-  addRoomForm = new FormGroup({
+  currentRoomDetails: Room | null = null;
+  updateRoomForm = new FormGroup({
     roomName: new FormControl('', Validators.required),
     roomType: new FormControl('', Validators.required),
     roomDescription: new FormControl('', Validators.required),
@@ -47,11 +39,50 @@ export class AddRoomComponent {
     address: new FormControl('', Validators.required),
     phone: new FormControl('', Validators.required),
   });
+  curRoomId: string | null = null;
+
+  ngOnInit() {
+    if (this.authService.getUserId() == null) {
+      this.router.navigateByUrl('login');
+    }
+
+    this.route.paramMap.subscribe((res) => {
+      console.log(res.get('roomId'));
+      this.curRoomId = res.get('roomId');
+    });
+    this.getRoom();
+  }
+
+  getRoom() {
+    this.hotelApi.getRoom(this.curRoomId ?? '')?.subscribe({
+      next: (res) => {
+        this.currentRoomDetails = res;
+        console.log(this.currentRoomDetails);
+        //patch the form
+
+        this.updateRoomForm.patchValue({
+          roomName: this.currentRoomDetails.roomName.toString(),
+          roomCapacity: this.currentRoomDetails.roomCapacity.toString(),
+          roomDescription: this.currentRoomDetails.roomDescription.toString(),
+          pricePerNight: this.currentRoomDetails.pricePerNight.toString(),
+          
+          roomType: this.currentRoomDetails.roomType.toString(),
+          country: this.currentRoomDetails.roomCountry.toString(),
+          zip: this.currentRoomDetails.roomZip.toString(),
+          state: this.currentRoomDetails.roomState.toString(),
+          city: this.currentRoomDetails.roomCity.toString(),
+          address: this.currentRoomDetails.roomAddress.toString(),
+          phone: this.currentRoomDetails.roomPhone.toString(),
+        });
+      },
+    });
+  }
 
   onSubmit() {
     //get creatorId from AuthService and add it to that!
-    let newRoomValue = this.addRoomForm.value;
+    let newRoomValue = this.updateRoomForm.value;
     const formData: FormData = new FormData();
+    formData.append('roomId',this.curRoomId??'');
     formData.append('roomName', newRoomValue.roomName ?? '');
     formData.append('roomType', newRoomValue.roomType ?? '');
     formData.append('roomDescription', newRoomValue.roomDescription ?? '');
@@ -65,15 +96,15 @@ export class AddRoomComponent {
     formData.append('roomCountry', newRoomValue.country ?? '');
     formData.append('roomPhone', newRoomValue.phone ?? '');
     if (this.image) {
-      formData.append('image', this.image, this.image?.name);
+      formData.append('newImg', this.image, this.image?.name);
     }
 
     console.log('Form Data');
     console.log(formData);
 
-    this.hotelApi.postAddRoom(formData).subscribe({
+    this.hotelApi.updateRoom(formData).subscribe({
       next: (res) => {
-        alert('Room Added Succesfully');
+        alert('Room updated Succesfully');
         //After successful addition, move to all rooms
         this.router.navigateByUrl('rooms');
       },
@@ -82,7 +113,6 @@ export class AddRoomComponent {
   }
 
   onFileChange(event: any) {
-    console.log(event);
     if (event.target.files.length > 0) {
       const file = event.target.files[0];
       this.image = file;

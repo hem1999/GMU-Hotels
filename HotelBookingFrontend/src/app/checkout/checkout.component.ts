@@ -7,11 +7,12 @@ import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
 import { HotelApiService } from '../services/hotel-api.service';
 import { addBookingType } from '../profile/booking.model';
+import { FormControl,Validators,ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-checkout',
   standalone: true,
-  imports: [KeyValuePipe],
+  imports: [KeyValuePipe, ReactiveFormsModule],
   templateUrl: './checkout.component.html',
   styleUrl: './checkout.component.css'
 })
@@ -20,8 +21,15 @@ export class CheckoutComponent implements OnInit, OnDestroy{
   // router = inject(Router);
   // cartService = inject(CartService);
 
+  //For edit button
+  currentEditItem = -1;
+  editButtonText = "Edit";
+  newStartDate =new  FormControl('',Validators.required);
+  newEndDate = new FormControl('',Validators.required);
+
+
   constructor(private authService:AuthService, private router:Router,
-     private cartService:CartService, private hoteApiService: HotelApiService){
+     private cartService:CartService, private hotelApiService: HotelApiService){
 
   }
   private cartSubscription: Subscription | undefined;
@@ -79,12 +87,46 @@ export class CheckoutComponent implements OnInit, OnDestroy{
   onCheckOut(){
     let request = this.makeBookingRequestFromCartItems();
     console.log(request);
-    this.hoteApiService.addBookings(request).subscribe({
+    this.hotelApiService.addBookings(request).subscribe({
       next: res => {
         this.router.navigateByUrl("/thankyou");
          }
     });
     
+  }
+
+  onEditCartItem(booking:cartBooking,itemIndex:number){
+    this.newStartDate.patchValue(booking.startDate.toString());
+    this.newEndDate.patchValue(booking.endDate.toString());
+    this.currentEditItem = itemIndex;
+  }
+
+  onEditCartSubmit(booking:cartBooking){
+    this.currentEditItem = -1;
+    //TODO: GetIsRoomAvailable when I tried for 5th sept to 7th sept on the single room page showing not available
+    // But here no error and also the response says true!
+    this.hotelApiService.getIsRoomAvailable(booking.roomId.toString(),this.newStartDate.value??'',this.newEndDate.value??'').subscribe(
+      {
+        next: res => {
+          console.log(res);
+          if(res){
+            this.cartService.removeOneBooking(booking.roomId.toString(),booking.startDate,booking.endDate);
+            let newBooking = booking;
+            newBooking.startDate = this.newStartDate.value??'';
+            newBooking.endDate = this.newEndDate.value??'';
+            this.cartService.addBooking(newBooking);
+            this.updateInvoice();
+          }else{
+            alert("Not available for updated booking dates!");
+          }
+          
+
+        },
+        error: err => {
+          alert("Not available for updated booking dates!");
+        }
+      }
+    )
   }
 
   removeThisBooking(booking: cartBooking){

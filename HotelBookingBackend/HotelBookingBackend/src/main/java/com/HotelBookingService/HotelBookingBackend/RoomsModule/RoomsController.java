@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -38,10 +39,45 @@ public class RoomsController {
     }
 
     @GetMapping("/filter")
-    public ResponseEntity<List<GetRoomDTO>> getAllRoomsByFilter(@RequestParam LocalDate startDate, @RequestParam LocalDate endDate){
-        List<GetRoomDTO> availableRooms = this.roomServiceImpl.getAllRoomsAvailableBetweenDates(startDate, endDate);
+    public ResponseEntity<List<GetRoomDTO>> getFilteredRooms(
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate,
+            @RequestParam(required = false) String roomZip,
+            @RequestParam(required = false) String roomType
+    ){
+
+        List<GetRoomDTO> availableRooms;
+        //TODO: must cover all possible combos! Should I do this in service itself!
+        if (startDate != null && endDate != null && roomZip != null) {
+            availableRooms = roomServiceImpl.getAllRoomsInZipCodeAndBetweenDates(roomZip, startDate, endDate);
+        } else if (startDate != null && endDate != null) {
+            availableRooms = roomServiceImpl.getAllRoomsAvailableBetweenDates(startDate, endDate);
+        } else if (roomZip != null) {
+            availableRooms = roomServiceImpl.getAllRoomsInZipCode(roomZip);
+        } else {
+            availableRooms = roomServiceImpl.getAllRooms(); // Assuming you have this method
+        }
+
         return new ResponseEntity<>(availableRooms, HttpStatus.OK);
     }
+
+//    @GetMapping("/filter")
+//    public ResponseEntity<List<GetRoomDTO>> getAllRoomsByFilter(@RequestParam LocalDate startDate, @RequestParam LocalDate endDate){
+//        List<GetRoomDTO> availableRooms = this.roomServiceImpl.getAllRoomsAvailableBetweenDates(startDate, endDate);
+//        return new ResponseEntity<>(availableRooms, HttpStatus.OK);
+//    }
+//
+//    @GetMapping("/filter")
+//    public ResponseEntity<List<GetRoomDTO>> getAllRoomsByFilter(@RequestParam String roomZip){
+//        List<GetRoomDTO> availableRooms = this.roomServiceImpl.getAllRoomsInZipCode(roomZip);
+//        return new ResponseEntity<>(availableRooms, HttpStatus.OK);
+//    }
+//
+//    @GetMapping("/filter")
+//    public ResponseEntity<List<GetRoomDTO>> getAllRoomsByFilter(@RequestParam LocalDate startDate, @RequestParam LocalDate endDate,@RequestParam String roomZip){
+//        List<GetRoomDTO> availableRooms = this.roomServiceImpl.getAllRoomsInZipCodeAndBetweenDates(roomZip, startDate, endDate);
+//        return new ResponseEntity<>(availableRooms, HttpStatus.OK);
+//    }
 
     @GetMapping("/available")
     public ResponseEntity<?> isRoomAvailable(@RequestParam @NonNull  Long roomId, @RequestParam @NonNull LocalDate startDate, @RequestParam LocalDate endDate){
@@ -81,8 +117,12 @@ public class RoomsController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<UpdateRoomDTO> updateRoom(@RequestBody UpdateRoomDTO room){
-        boolean res = this.roomServiceImpl.updateRoom(room);
+    public ResponseEntity<UpdateRoomDTO> updateRoom(@RequestParam(value = "newImg", required = false) MultipartFile newImg,
+                                                    @RequestParam Map<String, Object> updateRoom
+                                                    ){
+
+        UpdateRoomDTO room=new UpdateRoomDTO().makeUpdateRoomDTOFromMap(updateRoom);
+        boolean res = this.roomServiceImpl.updateRoom(newImg, room);
         if(res) {
             return ResponseEntity.ok(room);
         }

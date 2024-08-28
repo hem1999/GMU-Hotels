@@ -35,7 +35,7 @@ public class RoomServiceImpl implements RoomServices{
     public boolean addRoom(MultipartFile image, AddRoomDTO roomEntity) {
         try {
             if(roomEntity.getCreatorId() == null){
-                throw new IllegalArgumentException("Creater id cannot be null");
+                throw new IllegalArgumentException("Creator id cannot be null");
             }
 
             UserEntity creator = this.userRepository.findById(roomEntity.getCreatorId()).orElseThrow(
@@ -55,7 +55,6 @@ public class RoomServiceImpl implements RoomServices{
                     .createdByUser(creator)
                     .build();
 
-            //TODO: add mainImgsrc url to the db! how?? NOt so sure!
             var updatedRoom = this.roomRepository.save(r);
             String mainImgSrc = updatedRoom.getCreatedByUser().getUserId()+"/"+updatedRoom.getRoomId()+"/mainImg.jpg";
             String mainImgSrcUrl = s3Service.uploadFile(image, mainImgSrc);
@@ -71,16 +70,18 @@ public class RoomServiceImpl implements RoomServices{
 
     @Override
     public boolean deleteRoom(Long roomId) {
-        Optional<RoomEntity> roomEntity = this.roomRepository.findById(roomId);
-        if(roomEntity.isEmpty()){
-            throw new EntityNotFoundException("Room not found with id: "+roomId);
-        }
-        roomRepository.delete(roomEntity.get());
+        RoomEntity roomEntity = this.roomRepository.findById(roomId).orElseThrow(
+                () -> new EntityNotFoundException("Room not found with id: " + roomId)
+        );
+        String mainImgSrcKey = roomEntity.getCreatedByUser().getUserId()+"/"+roomEntity.getRoomId()+"/mainImg.jpg";
+        //TODO: How key differs from URL?
+        s3Service.deleteFile(mainImgSrcKey);//Here we are passing url, but all it needs is key!
+        roomRepository.delete(roomEntity);
         return true;
     }
 
     @Override
-    public boolean updateRoom(UpdateRoomDTO updateRoomDTO) {
+    public boolean updateRoom(MultipartFile newImg, UpdateRoomDTO updateRoomDTO) {
         Optional<RoomEntity> r = this.roomRepository.findById(updateRoomDTO.getRoomId());
         if(r.isEmpty()){
             throw new EntityNotFoundException("Room not found");
@@ -120,6 +121,14 @@ public class RoomServiceImpl implements RoomServices{
             roomEntity.setRoomCapacity(updateRoomDTO.getRoomCapacity());
         }
 
+        if(newImg!=null && !newImg.isEmpty()){
+            //First delete the old photo,
+            //Store the new photo in aws
+            //update the mainImgSrc
+            String mainImgSrcKey = roomEntity.getCreatedByUser().getUserId()+"/"+roomEntity.getRoomId()+"/mainImg.jpg";
+            String newUrl = s3Service.uploadFile(newImg, mainImgSrcKey);
+            roomEntity.setMainImgSrc(newUrl);
+        }
         roomRepository.save(roomEntity);
         return true;
 
@@ -129,7 +138,6 @@ public class RoomServiceImpl implements RoomServices{
     public List<GetRoomDTO> getAllRooms() {
         List<GetRoomDTO> rooms = new ArrayList<>();
         for(RoomEntity r: this.roomRepository.findAll()){
-
             rooms.add(new GetRoomDTO().makeGetRoomDTOFromRoomEntity(r));
         }
         return rooms;
@@ -148,6 +156,33 @@ public class RoomServiceImpl implements RoomServices{
     @Override
     public List<GetRoomDTO> getAllRoomsAvailableBetweenDates(LocalDate startDate, LocalDate endDate) {
         List<RoomEntity> rooms = this.roomRepository.availableRoomsBetweenStartDateAndEndDate(startDate, endDate);
+        List<GetRoomDTO> roomDTOs = new ArrayList<>();
+        for(RoomEntity r: rooms){
+            roomDTOs.add(new GetRoomDTO().makeGetRoomDTOFromRoomEntity(r));
+        }
+        return roomDTOs;
+    }
+    @Override
+    public List<GetRoomDTO> getAllRoomsInZipCode(String zipCode) {
+        List<RoomEntity> rooms = this.roomRepository.roomsInLocation(zipCode);
+        List<GetRoomDTO> roomDTOs = new ArrayList<>();
+        for(RoomEntity r: rooms){
+            roomDTOs.add(new GetRoomDTO().makeGetRoomDTOFromRoomEntity(r));
+        }
+        return roomDTOs;
+    }
+    @Override
+    public List<GetRoomDTO> getAllRoomsInZipCodeAndBetweenDates(String zipCode, LocalDate startDate, LocalDate endDate) {
+        List<RoomEntity> rooms = this.roomRepository.roomsInLocationAvailableBetweenStartDateAndEndDate(zipCode, startDate, endDate);
+        List<GetRoomDTO> roomDTOs = new ArrayList<>();
+        for(RoomEntity r: rooms){
+            roomDTOs.add(new GetRoomDTO().makeGetRoomDTOFromRoomEntity(r));
+        }
+        return roomDTOs;
+    }
+    @Override
+    public List<GetRoomDTO> getAllRoomsByRoomType(String roomType) {
+        List<RoomEntity> rooms = this.roomRepository.findByRoomType(roomType);
         List<GetRoomDTO> roomDTOs = new ArrayList<>();
         for(RoomEntity r: rooms){
             roomDTOs.add(new GetRoomDTO().makeGetRoomDTOFromRoomEntity(r));

@@ -1,0 +1,118 @@
+<div class="flex justify-center w-[75vh] mx-auto">
+    <div>
+      <h1 class="text-3xl mb-3 text-center">Add Room</h1>
+      <form
+        [formGroup]="updateRoomForm"
+        class="border-4 border-slate-500 rounded p-2"
+        (ngSubmit)="onSubmit()"
+      >
+        <div class="flex justify-start">
+          <div class="w-[45%]">
+            <label class="ml-6">Room Name</label>
+            <input type="text" formControlName="roomName" class="sim-input" />
+          </div>
+          <div class="w-[45%]">
+            <label class="ml-6">Room Capacity</label>
+            <input type="text" formControlName="roomCapacity" class="sim-input" />
+          </div>
+  
+        </div>
+        <div>
+          <label class="ml-6">Room Description</label>
+          <textarea
+            rows="3"
+            class="ml-6 border-2 border-slate-400 rounded w-[80%]"
+            formControlName="roomDescription"
+          ></textarea>
+        </div>
+        <div class="flex justify-start">
+          <div class="w-[25%]">
+            <label class="ml-6">Price</label>
+            <input
+              type="number"
+              formControlName="pricePerNight"
+              class="sim-input"
+            />
+          </div>
+          <div class="w-[25%]">
+            <label class="ml-6">roomType</label>
+            <input type="text" formControlName="roomType" class="sim-input" />
+          </div>
+          <div class="w-[25%]">
+            <label class="mx-6">City</label>
+            <input
+              type="text"
+              name="City"
+              formControlName="city"
+              class="sim-input"
+            />
+          </div>
+        </div>
+        <div class="flex justify-start ml-0 pl-0">
+          <div class="w-[30%]">
+            <label class="mx-6">phone</label>
+            <input
+              type="text"
+              name="phone"
+              formControlName="phone"
+              class="sim-input"
+            />
+          </div>
+          <div class="w-[60%]">
+            <label class="mx-6">Address</label>
+            <input
+              type="text"
+              name="address"
+              formControlName="address"
+              class="sim-input"
+            />
+          </div>
+        </div>
+  
+        <div class="flex justify-start ml-0 pl-0">
+          <div class="w-[30%]">
+            <label class="mx-6">State</label>
+            <input
+              type="text"
+              name="state"
+              formControlName="state"
+              class="sim-input"
+            />
+          </div>
+          <div class="w-[30%]">
+            <label class="mx-6">zip</label>
+            <input
+              type="text"
+              name="zip"
+              formControlName="zip"
+              class="sim-input"
+            />
+          </div>
+          <div class="w-[30%]">
+            <label class="mx-6">Country</label>
+            <input
+              type="text"
+              name="country"
+              formControlName="country"
+              class="sim-input"
+            />
+          </div>
+        </div>
+  
+        <label class="ml-6">Images:</label>
+        <input
+          type="file"
+          (change)="onFileChange($event)"
+          name="mainImgSrc"
+          formControlName="mainImgSrc"
+          class="sim-input"
+        />
+        <div>
+          <button type="submit" class="blue-btn ml-6 h-[20%] w-[35%]">
+            Create
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  

@@ -10,6 +10,7 @@ import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetUrlRequest;
 import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
@@ -59,5 +60,36 @@ public class S3Service {
         }
 
 
+    }
+
+    public String updateFile(@NotNull MultipartFile image, String oldImgName) {
+        try{
+            S3Client s3Client = setupCreds();
+            String key = "hotelManagementPhotos/"+oldImgName;
+            //Try to change this and use below function later!
+            DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
+                    .bucket("vduddu")
+                    .key(key).build();
+            s3Client.deleteObject(deleteObjectRequest);
+            return this.uploadFile(image,oldImgName);
+
+        }catch(Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean deleteFile(String imgName) {
+        try{
+            S3Client s3Client = setupCreds();
+            String key = "hotelManagementPhotos/"+imgName;
+            DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
+                    .bucket("vduddu")
+                    .key(key)
+                    .build();
+            s3Client.deleteObject(deleteObjectRequest);
+            return true;
+        }catch(Exception e){
+            return false;
+        }
     }
 }

@@ -1,9 +1,11 @@
-<h1>Payment</h1>
-<p>Pay and own the beautiful place for time being</p>
+<h1 class="text-3xl text-center">Payment</h1>
+<p class="text-xl text-center text-slate-600">
+  Pay and own the beautiful place for time being
+</p>
 
 <div class="flex justify-start mt-2">
   <div class="w-[60%] ml-[15px]">
-    @for(booking of cartItems; track booking.roomId){
+    @for(booking of cartItems; track $index){
     <div
       class="bg-white shadow-md rounded-lg overflow-hidden mb-4 flex justify-between"
     >
@@ -12,6 +14,7 @@
           <h3 class="text-xl font-bold text-gray-800">
             {{ booking.roomName }}
           </h3>
+          @if(currentEditItem != $index){
           <p class="text-gray-600 font-bold ml-2 mt-1">
             Start Date:
             <span class="text-gray-800">{{ booking.startDate }}</span>
@@ -19,6 +22,31 @@
           <p class="text-gray-600 font-bold ml-2 mt-1">
             End Date: <span class="text-gray-800">{{ booking.endDate }}</span>
           </p>
+          }@else {
+          <div class="flex ml-2">
+            <div>
+              <label class="mt-2 ml-2">StartDate: </label>
+              <input
+                type="date"
+                class="sim-input ml-2"
+                [formControl]="newStartDate"
+              />
+            </div>
+
+            <div>
+              <label class="ml-6">EndDate: </label>
+              <input
+                type="date"
+                class="sim-input"
+                [formControl]="newEndDate"
+              />
+            </div>
+            <button (click)="onEditCartSubmit(booking)" class="blue-btn ml-3 mt-4">
+              Update
+            </button>
+          </div>
+
+          }
           <p class="text-gray-800 font-bold ml-2 mt-1">
             Price per Night: ${{ booking.pricePerNight.toFixed(2) }}
           </p>
@@ -43,18 +71,24 @@
       </div>
       <div class="ml-1">
         <!-- Edit Button -->
-        <button class="blue-btn" (click)="removeThisBooking(booking)">Cancel</button>
+        <button class="blue-btn" (click)="onEditCartItem(booking, $index)">Edit</button>
+        <button
+          class="red-btn font-bold text-slate-800"
+          (click)="removeThisBooking(booking)"
+        >
+          Cancel
+        </button>
       </div>
     </div>
 
     }
   </div>
   <div
-    class="w-[30%] ml-2 border-2 border-slate-800 rounded bg-white shadow-md overflow-hidden"
+    class="w-[30%] ml-2 border-2 border-white rounded bg-white shadow-md overflow-hidden"
   >
     <h2 class="text-center text-xl">Payment Details</h2>
     <!-- Total Pay showcase and be done with it! -->
-    @for(b of invoice | keyvalue; track b.key){
+    @for(b of invoice | keyvalue; track $index){
     <div class="border-b-slate-600 border-2 flex justify-between">
       <p class="m-4 text-xl text-slate-600">{{ b.key }}</p>
       <p class="m-4 text-xl text-slate-600">{{ b.value }}</p>
@@ -66,7 +100,7 @@
     </div>
 
     <div class="flex justify-center mt-2">
-        <button class="blue-btn" (click)="onCheckOut()">Checkout</button>
+      <button class="blue-btn" (click)="onCheckOut()">Checkout</button>
     </div>
   </div>
 </div>

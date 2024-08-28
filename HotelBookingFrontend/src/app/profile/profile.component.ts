@@ -39,6 +39,7 @@ export class ProfileComponent implements OnInit {
   currentUserId: String | null = null;
   currentUserProfile: WritableSignal<any> = signal({}); //TODO: Later declare the profile type
   userType: String = 'USER';
+  isAdmin:boolean = false;
   //For booking button
   //For update button
   showUpdateForm = false;
@@ -121,6 +122,7 @@ export class ProfileComponent implements OnInit {
 
         if (this.currentUserProfile().userType == 'ADMIN') {
           this.userType = 'ADMIN';
+          this.isAdmin = true;
         }
 
         this.visibleBookings = this.currentUserProfile().bookings.upcoming;
@@ -180,6 +182,16 @@ export class ProfileComponent implements OnInit {
     this.router.navigateByUrl(`/room/${roomId}`);
   }
 
+  deleteRoom(roomId:String){
+    this.hotelApi.deleteRoom(roomId).subscribe({
+      next: res => {
+        alert("Room is deleted!");
+        //TODO: Must also delete all future booking and send email.
+        this.getProfile(this.currentUserId);
+      },
+    })
+  }
+
   updateBooking(booking: Booking){
     this.updatingBooking = booking.bookingId;
     this.newStartDate.setValue(booking.startDate.toString());
@@ -224,5 +236,9 @@ export class ProfileComponent implements OnInit {
         this.getProfile(this.currentUserId);
       }
     })
+  }
+
+  onEditRoom(roomId: Number){
+    this.router.navigateByUrl(`/updateRoom/${roomId}`);
   }
 }

@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authorization.AuthorizationDecision;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -45,11 +44,14 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         //authorizes requests with urls to permit all and at the end says all other requests need to be authenticated.
                         req -> req.requestMatchers("/auth/**","auth/validateToken",
-                                        "/rooms/available/**","/rooms/filter","/rooms/{id}","/rooms" //Any customer should be able to view rooms and check availability without logging in!
+                                        "/rooms/available/**","/rooms/filter","/rooms/{id}",
+                                        "/feedback/avgRating","/feedback/filter"//Any customer should be able to view rooms and check availability without logging in!
                                 ).permitAll()
                                 .requestMatchers("/rooms/add","/rooms/update","/rooms/delete/**").hasRole("ADMIN") // making sure only  admins can do this!
+                                .requestMatchers("/bookings/**").hasRole("USER")
                                 .requestMatchers("/user/updateUser").authenticated()
                                 .requestMatchers("/user/{id}","/user/deleteUser/{id}","/user/userBookings/{id}").access(this::hasUserId)
+                                .requestMatchers("/rooms").permitAll()
                                 .anyRequest().authenticated()
                 )
                 //Disabling CSRF

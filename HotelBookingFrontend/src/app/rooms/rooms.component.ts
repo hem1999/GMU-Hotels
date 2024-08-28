@@ -30,7 +30,7 @@ export class RoomsComponent implements OnInit{
   // Form control for startDate and endDate inputs to fetch available rooms
   filterStartDate = new FormControl('', Validators.required);
   filterEndDate = new FormControl('', Validators.required);
-
+  filterZip = new FormControl('',Validators.required);
   ngOnInit(){
     this.getRooms();
   }
@@ -81,14 +81,24 @@ export class RoomsComponent implements OnInit{
   }
 
   onDateBasedFilter(){
-    console.log(this.filterStartDate);
-    console.log(this.filterStartDate);
     //TODO: fetch on available rooms and update the signal that reflects in the view.
-    this.rooms.set([...this.rooms().slice(2,5)]);
+    this.hotelApi.getAvailableRooms(this.filterStartDate.value??'',this.filterEndDate.value??'').subscribe(
+      {
+        next: res => {
+          console.log(res);
+          this.rooms.set(res);
+        },
+        error: err => {
+          console.log(err);
+        }
+      }
+    )
   }
 
   
-  onClearDateFilter(){
+  onClearAllFilter(){
+    this.filterStartDate.patchValue('');
+    this.filterEndDate.patchValue('');
     this.getRooms();
   }
 

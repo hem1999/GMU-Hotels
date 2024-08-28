@@ -25,6 +25,15 @@ import java.util.List;
         query= "select 1 from RoomEntity r where r.roomId = :roomId and not exists " +
                 "(select 1 from BookingEntity b where b.room=r and b.startDate<=:endDate and b.endDate>=:startDate)"
 )
+@NamedQuery(
+        name="RoomEntity.roomsInLocation",
+        query = "select r from RoomEntity r where r.roomZip=:roomZip"
+)
+@NamedQuery(
+        name="RoomEntity.roomsInLocationAvailableBetweenStartDateAndEndDate",
+        query = "select r from RoomEntity r where r.roomZip=:roomzip and" +
+                " r not in (select b.room from BookingEntity b where b.startDate<=:endDate and b.endDate>=:startDate)"
+)
 public class RoomEntity {
     @Id
     @GeneratedValue

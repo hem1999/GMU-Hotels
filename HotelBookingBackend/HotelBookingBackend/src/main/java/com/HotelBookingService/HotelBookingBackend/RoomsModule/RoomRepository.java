@@ -11,4 +11,7 @@ public interface RoomRepository extends JpaRepository<RoomEntity,Long> {
 
     List<RoomEntity> availableRoomsBetweenStartDateAndEndDate(LocalDate startDate, LocalDate endDate);
     Integer roomAvailabilityBetweenStartDateAndEndDate(Long roomId, LocalDate startDate, LocalDate endDate);
+    List<RoomEntity> roomsInLocation(String roomZip);
+    List<RoomEntity> roomsInLocationAvailableBetweenStartDateAndEndDate(String roomZip,LocalDate startDate, LocalDate endDate);
+    List<RoomEntity> findByRoomType(String roomType);
 }

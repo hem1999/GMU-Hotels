@@ -12,9 +12,12 @@ import java.util.Optional;
 public interface RoomServices {
      boolean addRoom(MultipartFile image, AddRoomDTO roomEntity);
      boolean deleteRoom(Long roomId);
-     boolean updateRoom(UpdateRoomDTO updateRoomDTO);
+     boolean updateRoom(MultipartFile newImg, UpdateRoomDTO updateRoomDTO);
       List<GetRoomDTO> getAllRooms();
      Optional<GetRoomDTO> GetRoomById(Long roomId);
      List<GetRoomDTO> getAllRoomsAvailableBetweenDates(LocalDate startDate, LocalDate endDate);
      boolean isRoomAvailable(Long roomId, LocalDate startDate, LocalDate endDate);
+     List<GetRoomDTO> getAllRoomsInZipCode(String zipCode);
+     List<GetRoomDTO> getAllRoomsInZipCodeAndBetweenDates(String zipCode, LocalDate startDate, LocalDate endDate);
+     List<GetRoomDTO> getAllRoomsByRoomType(String roomType);
 }
